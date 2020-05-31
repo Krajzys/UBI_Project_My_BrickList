@@ -1,5 +1,6 @@
 package com.ubiquitous.bricklist
 
+import android.app.ActionBar
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -13,6 +14,7 @@ import android.widget.Button
 import android.widget.Toast
 
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
     val REQUEST_CODE = 10000
@@ -23,9 +25,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Project List"
         refreshView()
-
-        // TODO: Connect to database
-        // TODO: Fill the main page with buttons from project database (FML...)
 
         fab.setOnClickListener { view ->
             showActivity("Add Project")
@@ -53,6 +52,16 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.home -> {
                 this.finish()
+                return true
+            }
+            R.id.clear_user_db -> {
+                val myDB = DBHelperino(this).writableDatabase
+                var query = "DELETE FROM inventories"
+                myDB.execSQL(query)
+                query = "DELETE FROM inventoriesparts"
+                myDB.execSQL(query)
+                myDB.close()
+                refreshView()
                 return true
             }
             else -> super.onOptionsItemSelected(item)
@@ -84,22 +93,52 @@ class MainActivity : AppCompatActivity() {
     fun viewProject(v: View) {
         var projectName = (v as Button).text
         var i = Intent(this, ViewProjectActivity::class.java)
+        i.putExtra("projectcode", v.tag.toString())
         i.putExtra("projectname", projectName)
         showActivity("View Project", i)
     }
 
     fun refreshView() {
+        linearList.removeAllViews()
         val DBHelp = DBHelperino(this)
         val db = DBHelp.readableDatabase
         val query = "SELECT * FROM inventories"
         val cursor = db.rawQuery(query, null)
-        if (cursor.moveToFirst()) { // TODO: Fill out this view
 
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast) {
+                val inventory = Inventory(cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3))
+                val newButton = Button(this)
+                val layoutParam = ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT)
+                layoutParam.setMargins(0,0,0,10)
+                newButton.tag = inventory.id
+                newButton.setText(inventory.name)
+                newButton.setBackgroundColor(resources.getColor(R.color.colorAccent))
+                newButton.setTextColor(android.graphics.Color.WHITE)
+                newButton.setOnClickListener {
+                    var projectName = (it as Button).text
+                    var i = Intent(this, ViewProjectActivity::class.java)
+                    i.putExtra("projectcode", it.tag.toString())
+                    i.putExtra("projectname", projectName)
+                    showActivity("View Project", i)
+                }
+                linearList.addView(newButton, layoutParam)
+                cursor.moveToNext()
+            }
         }
         else {
             Toast.makeText(this, "Inventories table is empty!", Toast.LENGTH_LONG).show()
         }
         cursor.close()
         db.close()
+    }
+
+    fun toastMessage(content: String, isLong: Boolean) {
+        var length = if (isLong) {
+            Toast.LENGTH_LONG
+        } else {
+            Toast.LENGTH_SHORT
+        }
+        Toast.makeText(this, content, length).show()
     }
 }

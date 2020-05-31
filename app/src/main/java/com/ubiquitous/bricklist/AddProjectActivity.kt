@@ -28,9 +28,6 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 
 class AddProjectActivity : AppCompatActivity() {
-    // TODO: Check if Project ID is a ID of legit LEGO set
-    // TODO: If yes download XML File from the web and read it
-    // TODO: If no then say so
     var URLGiven: String? = ""
     var checkedID: String = ""
 
@@ -124,7 +121,6 @@ class AddProjectActivity : AppCompatActivity() {
         }
     }
 
-    // TODO: Add records to inventories parts based on XML file
     fun loadData(fileName: String?, inventoryID: Int) {
         val path = filesDir
         val inDir = File(path, "XML")
@@ -149,27 +145,50 @@ class AddProjectActivity : AppCompatActivity() {
                         val elem = itemNode as Element
                         val children = elem.childNodes
 
+                        val values = ContentValues()
+                        val DBHelp = DBHelperino(this)
+                        val currIndex = DBHelp.getLastID("inventoriesparts") + 1
+
+                        val inventoryPart = InventoryPart()
+                        inventoryPart.id = currIndex
+                        inventoryPart.inventoryID = inventoryID
+                        inventoryPart.quantityInStore = 0
+
                         for (j in 0 until children.length) {
                             val node = children.item(j)
                             Log.i("Node Info", node.nodeName + " " + node.textContent)
-                            /*when (node.nodeName) {
+                            when (node.nodeName) {
                                 "ITEMTYPE" -> {
-                                    values.put("typeid", node.textContent.toInt())
+                                    val typeid = DBHelp.findItemType(node.textContent)?.id
+                                    if (typeid != null) {
+                                        inventoryPart.typeID = typeid
+                                    }
+                                    else {
+                                        inventoryPart.typeID = -1
+                                    }
                                 }
                                 "ITEMID" -> {
-                                    values.put("itemid", node.textContent.toInt())
+                                    val itemid = DBHelp.findPart(node.textContent)?.id
+                                    if (itemid != null) {
+                                        inventoryPart.itemID = itemid
+                                    }
                                 }
                                 "QTY" -> {
-                                    values.put("quantityinset", node.textContent.toInt())
+                                    inventoryPart.quantityInSet = node.textContent.toInt()
                                 }
                                 "COLOR" -> {
-                                    values.put("colorid", node.textContent.toInt())
+                                    val colorid = DBHelp.findColor(node.textContent.toInt())?.id
+                                    if (colorid != null) {
+                                        inventoryPart.colorID = colorid
+                                    }
                                 }
                                 "EXTRA" -> {
-                                    values.put("extra", node.textContent.toInt())
+                                    inventoryPart.extra = node.textContent.hashCode()
                                 }
-                            }*/
+                            }
                         }
+
+                        DBHelp.addInventoryPart(inventoryPart)
                     }
                 }
             }

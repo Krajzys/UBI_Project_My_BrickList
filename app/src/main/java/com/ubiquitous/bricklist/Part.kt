@@ -23,6 +23,14 @@ class Part {
         this.namePL = namePL
     }
 
+    constructor(id: Int, typeID: Int, code: String, name: String, categoryID: Int) {
+        this.id = id
+        this.typeID = typeID
+        this.code = code
+        this.name = name
+        this.categoryID = categoryID
+    }
+
     constructor(id: Int, typeID: Int, code: String, name: String, namePL: String, categoryID: Int) {
         this.id = id
         this.typeID = typeID

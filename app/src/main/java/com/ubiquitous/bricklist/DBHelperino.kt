@@ -89,13 +89,23 @@ class DBHelperino(val context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         val cursor = db.rawQuery(query, null)
         var code: Code? = null
         if (cursor.moveToFirst()) {
-            code = Code(
-                cursor.getInt(0),
-                cursor.getInt(1),
-                cursor.getInt(2),
-                cursor.getInt(3),
-                cursor.getBlob(4)
-            )
+            if (cursor.isNull(4)) {
+                code = Code(
+                    cursor.getInt(0),
+                    cursor.getInt(1),
+                    cursor.getInt(2),
+                    cursor.getInt(3)
+                )
+            }
+            else {
+                code = Code(
+                    cursor.getInt(0),
+                    cursor.getInt(1),
+                    cursor.getInt(2),
+                    cursor.getInt(3),
+                    cursor.getBlob(4)
+                )
+            }
         }
         cursor.close()
         db.close()
@@ -108,13 +118,23 @@ class DBHelperino(val context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         val cursor = db.rawQuery(query, null)
         var code: Code? = null
         if (cursor.moveToFirst()) {
-            code = Code(
-                cursor.getInt(0),
-                cursor.getInt(1),
-                cursor.getInt(2),
-                cursor.getInt(3),
-                cursor.getBlob(4)
-            )
+            if (cursor.isNull(4)) {
+                code = Code(
+                    cursor.getInt(0),
+                    cursor.getInt(1),
+                    cursor.getInt(2),
+                    cursor.getInt(3)
+                )
+            }
+            else {
+                code = Code(
+                    cursor.getInt(0),
+                    cursor.getInt(1),
+                    cursor.getInt(2),
+                    cursor.getInt(3),
+                    cursor.getBlob(4)
+                )
+            }
         }
         cursor.close()
         db.close()
@@ -127,8 +147,14 @@ class DBHelperino(val context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         val cursor = db.rawQuery(query, null)
         var color: Color? = null
         if (cursor.moveToFirst()) {
-            color =
-                Color(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getString(3))
+            if (cursor.isNull(3)) {
+                color =
+                    Color(cursor.getInt(0), cursor.getInt(1), cursor.getString(2))
+            }
+            else {
+                color =
+                    Color(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getString(3))
+            }
         }
         cursor.close()
         db.close()
@@ -141,7 +167,14 @@ class DBHelperino(val context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         val cursor = db.rawQuery(query, null)
         var color: Color? = null
         if (cursor.moveToFirst()) {
-            color = Color(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getString(3))
+            if (cursor.isNull(3)) {
+                color =
+                    Color(cursor.getInt(0), cursor.getInt(1), cursor.getString(2))
+            }
+            else {
+                color =
+                    Color(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getString(3))
+            }
         }
         cursor.close()
         db.close()
@@ -211,7 +244,21 @@ class DBHelperino(val context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         val cursor = db.rawQuery(query, null)
         var itemType: ItemType? = null
         if (cursor.moveToFirst()) {
-            itemType = ItemType(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3))
+            if (cursor.isNull(3)) {
+                itemType = ItemType(
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getString(2)
+                )
+            }
+            else {
+                itemType = ItemType(
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3)
+                )
+            }
         }
         cursor.close()
         db.close()
@@ -220,11 +267,25 @@ class DBHelperino(val context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
 
     fun findItemType(code: String): ItemType? {
         val db = this.readableDatabase
-        val query = "SELECT * FROM itemtypes WHERE code = $code"
+        val query = "SELECT * FROM itemtypes WHERE code = '$code'"
         val cursor = db.rawQuery(query, null)
         var itemType: ItemType? = null
         if (cursor.moveToFirst()) {
-            itemType = ItemType(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3))
+            if (cursor.isNull(3)) {
+                itemType = ItemType(
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getString(2)
+                )
+            }
+            else {
+                itemType = ItemType(
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3)
+                )
+            }
         }
         cursor.close()
         db.close()
@@ -237,7 +298,25 @@ class DBHelperino(val context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         val cursor = db.rawQuery(query, null)
         var part: Part? = null
         if (cursor.moveToFirst()) {
-            part = Part(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5))
+            if (cursor.isNull(4)) {
+                part = Part(
+                    cursor.getInt(0),
+                    cursor.getInt(1),
+                    cursor.getString(2),
+                    cursor.getString(3),
+                    cursor.getInt(5)
+                )
+            }
+            else {
+                part = Part(
+                    cursor.getInt(0),
+                    cursor.getInt(1),
+                    cursor.getString(2),
+                    cursor.getString(3),
+                    cursor.getString(4),
+                    cursor.getInt(5)
+                )
+            }
         }
         cursor.close()
         db.close()
@@ -246,11 +325,29 @@ class DBHelperino(val context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
 
     fun findPart(code: String): Part? {
         val db = this.readableDatabase
-        val query = "SELECT * FROM parts WHERE code = $code"
+        val query = "SELECT * FROM parts WHERE code = '$code'"
         val cursor = db.rawQuery(query, null)
         var part: Part? = null
         if (cursor.moveToFirst()) {
-            part = Part(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5))
+            if (cursor.isNull(4)) {
+                part = Part(
+                    cursor.getInt(0),
+                    cursor.getInt(1),
+                    cursor.getString(2),
+                    cursor.getString(3),
+                    cursor.getInt(5)
+                )
+            }
+            else {
+                part = Part(
+                    cursor.getInt(0),
+                    cursor.getInt(1),
+                    cursor.getString(2),
+                    cursor.getString(3),
+                    cursor.getString(4),
+                    cursor.getInt(5)
+                )
+            }
         }
         cursor.close()
         db.close()
@@ -291,6 +388,21 @@ class DBHelperino(val context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         values.put("image", code.image)
         val db = this.writableDatabase
         db.update("codes", values, "id="+code.id, null)
+        db.close()
+    }
+
+    fun editInventoryPart(inventoryPart: InventoryPart) {
+        val values = ContentValues()
+        values.put("id", inventoryPart.id)
+        values.put("inventoryid", inventoryPart.inventoryID)
+        values.put("typeid", inventoryPart.typeID)
+        values.put("itemid", inventoryPart.itemID)
+        values.put("quantityinstore", inventoryPart.quantityInStore)
+        values.put("quantityinset", inventoryPart.quantityInSet)
+        values.put("colorid", inventoryPart.colorID)
+        values.put("extra", inventoryPart.extra)
+        val db = this.writableDatabase
+        db.update("inventoriesparts", values, "id="+inventoryPart.id, null)
         db.close()
     }
 

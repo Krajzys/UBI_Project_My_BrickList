@@ -10,6 +10,10 @@ class InventoryPart {
     var colorID: Int = 0
     var extra: Int = 0
 
+    constructor() {
+
+    }
+
     constructor(
         id: Int,
         inventoryID: Int,
