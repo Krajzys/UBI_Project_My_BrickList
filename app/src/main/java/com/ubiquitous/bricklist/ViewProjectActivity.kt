@@ -102,7 +102,6 @@ class ViewProjectActivity : AppCompatActivity() {
                     // open temp file and save to byte array
                     val file = File("$filesDir/images/" + ourCode)
                     var bytes = file.readBytes()
-                    file.delete()
                     editCode.image = bytes
                     DBHelp.editCode(editCode)
                     DBHelp.close()

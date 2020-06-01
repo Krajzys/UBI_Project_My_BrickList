@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
                 query = "DELETE FROM inventoriesparts"
                 myDB.execSQL(query)
                 myDB.close()
+                File("$filesDir/images/").deleteRecursively()
                 refreshView()
                 return true
             }
