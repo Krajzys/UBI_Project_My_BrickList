@@ -85,7 +85,6 @@ class AddProjectActivity : AppCompatActivity() {
 
         override fun doInBackground(vararg p0: String?): String {
             try {
-                Log.w("test", "im in")
                 val url = URL(URLGiven + projectCode + ".xml")
                 val connection = url.openConnection()
                 connection.connect()

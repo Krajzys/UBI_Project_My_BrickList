@@ -1,20 +1,23 @@
 package com.ubiquitous.bricklist
 
 import android.app.ActionBar
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
-
+import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.Preference
+import androidx.preference.PreferenceManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import java.io.File
+import kotlin.math.abs
+
 
 class MainActivity : AppCompatActivity() {
     val REQUEST_CODE = 10000
@@ -80,13 +83,13 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(i, REQUEST_CODE)
             return
         }
-        Toast.makeText(this, "Rozpoczęto nową aktywność", Toast.LENGTH_LONG).show()
+        //Toast.makeText(this, "Rozpoczęto nową aktywność", Toast.LENGTH_LONG).show()
         startActivityForResult(intent, REQUEST_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Toast.makeText(this, "Powrócono z aktywności", Toast.LENGTH_LONG).show()
+        //Toast.makeText(this, "Powrócono z aktywności", Toast.LENGTH_LONG).show()
         refreshView()
     }
 
@@ -107,13 +110,24 @@ class MainActivity : AppCompatActivity() {
 
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast) {
-                val inventory = Inventory(cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3))
+                val inventory = Inventory(
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getInt(2),
+                    cursor.getInt(3)
+                )
                 val newButton = Button(this)
-                val layoutParam = ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT)
-                layoutParam.setMargins(0,0,0,10)
+                val layoutParam = ActionBar.LayoutParams(
+                    ActionBar.LayoutParams.MATCH_PARENT,
+                    ActionBar.LayoutParams.WRAP_CONTENT
+                )
+                layoutParam.setMargins(0, 0, 0, 10)
                 newButton.tag = inventory.id
                 newButton.setText(inventory.name)
                 newButton.setBackgroundColor(resources.getColor(R.color.colorAccent))
+                if (inventory.active == 0) {
+                    newButton.setBackgroundColor(resources.getColor(R.color.colorPrimaryDark))
+                }
                 newButton.setTextColor(android.graphics.Color.WHITE)
                 newButton.setOnClickListener {
                     var projectName = (it as Button).text
@@ -122,11 +136,27 @@ class MainActivity : AppCompatActivity() {
                     i.putExtra("projectname", projectName)
                     showActivity("View Project", i)
                 }
+                newButton.isLongClickable = true
+                newButton.setOnLongClickListener ({
+                    inventory.active = abs(inventory.active - 1)
+                    DBHelp.editInventory(inventory)
+                    if (inventory.active == 0)
+                        toastMessage(inventory.name + " archived", false)
+                    else
+                        toastMessage(inventory.name + " activated", false)
+                    refreshView()
+                    true
+                })
+                val showArchived = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("archiveSwitch", true)
+                if (!showArchived) {
+                    if (inventory.active == 0) {
+                        newButton.visibility = Button.GONE
+                    }
+                }
                 linearList.addView(newButton, layoutParam)
                 cursor.moveToNext()
             }
-        }
-        else {
+        } else {
             Toast.makeText(this, "Inventories table is empty!", Toast.LENGTH_LONG).show()
         }
         cursor.close()

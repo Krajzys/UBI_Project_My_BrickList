@@ -9,7 +9,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:key="archiveSwitch"
-            android:summary="Show archived projects"
+            android:summary="Show archived projects\n\nTo archive a project long press a project name"
             android:title="Archive" />
         <EditTextPreference
             android:defaultValue="false"

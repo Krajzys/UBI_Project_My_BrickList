@@ -406,6 +406,17 @@ class DBHelperino(val context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         db.close()
     }
 
+    fun editInventory(inventory: Inventory) {
+        val values = ContentValues()
+        values.put("id", inventory.id)
+        values.put("name", inventory.name)
+        values.put("active", inventory.active)
+        values.put("lastaccessed", inventory.lastAccessed)
+        val db = this.writableDatabase
+        db.update("inventories", values, "id="+inventory.id, null)
+        db.close()
+    }
+
     companion object {
         const val ASSETS_PATH = "databases"
         const val DATABASE_NAME = "BrickList"
